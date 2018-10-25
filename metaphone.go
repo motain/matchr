@@ -7,7 +7,6 @@ import (
 
 type metaphoneresult struct {
 	// the maximum number of code values to calculate
-	maxLength int
 
 	// whether to calculate an alternate
 	calcAlternate bool
@@ -21,8 +20,8 @@ type metaphoneresult struct {
 	AlternateLength int
 }
 
-func newMetaphoneresult(maxLength int, calcAlternate bool) (r *metaphoneresult) {
-	r = &metaphoneresult{maxLength: maxLength, calcAlternate: calcAlternate}
+func newMetaphoneresult(calcAlternate bool) (r *metaphoneresult) {
+	r = &metaphoneresult{calcAlternate: calcAlternate}
 	return
 }
 
@@ -38,20 +37,8 @@ func (r *metaphoneresult) add(c1 string, c2 string) {
 	}
 }
 
-func (r *metaphoneresult) isComplete() bool {
-	return r.PrimaryLength >= r.maxLength && r.AlternateLength >= r.maxLength
-}
-
 func (r *metaphoneresult) result() (primary string, alternate string) {
-	primary = r.primary.String()
-	if len(primary) > r.maxLength {
-		primary = primary[0:r.maxLength]
-	}
-	alternate = r.alternate.String()
-	if len(alternate) > r.maxLength {
-		alternate = alternate[0:r.maxLength]
-	}
-	return
+	return r.primary.String(), r.alternate.String()
 }
 
 // utility functions for checking things within a string
@@ -623,9 +610,9 @@ func DoubleMetaphone(s1 string) (string, string) {
 		index += 1
 	}
 
-	result := newMetaphoneresult(4, true)
+	result := newMetaphoneresult(true)
 
-	for !result.isComplete() && index <= len(input)-1 {
+	for index <= len(input)-1 {
 		c := rune(input.SafeAt(index))
 		switch c {
 		case 'A', 'E', 'I', 'O', 'U', 'Y':
